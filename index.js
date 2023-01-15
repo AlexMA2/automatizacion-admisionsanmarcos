@@ -1,5 +1,7 @@
 import { chromium } from "playwright";
 import async from "async";
+import XLSX from "xlsx";
+import Excel from "exceljs";
 
 (async () => {
   const browser = await chromium.launch();
@@ -79,6 +81,16 @@ import async from "async";
     }
   };
 
+  const createXLSXFile = (data, fileName) => {
+    const workbook = new Excel.Workbook();
+    const sheet = workbook.addWorksheet("Sheet1");
+    sheet.columns = Object.keys(data[0]).map((key) => {
+      return { header: key, key: key };
+    });
+    sheet.addRows(data);
+    return workbook.xlsx.writeFile(fileName);
+  };
+
   const clickNext = async () => {
     const idxNextButton = liElementsText.length - 1;
     await page.locator(`[data-dt-idx="${idxNextButton}"]`).click();
@@ -103,12 +115,16 @@ import async from "async";
           await clickNext();
         }
       })
-      .then(() => {
+      .then(async () => {
         const finalStudents = newStudents.slice(maxPages, newStudents.length);
 
         finalStudents.sort((a, b) => (a.score > b.score ? -1 : 1));
-        console.log(`------- ${career} -------`);
-        console.log("New Students", finalStudents);
+
+        console.log("Convertir JSON array to an excel file..");
+
+        const filename = `./files/${career.split(" ").join("_")}.xlsx`;
+
+        createXLSXFile(finalStudents, filename);
       });
   } catch (error) {
     console.log(error);

@@ -19,6 +19,9 @@
     "extends": "standard"
   },
   "dependencies": {
-    "async": "^3.2.4"
+    "async": "^3.2.4",
+    "exceljs": "^4.3.0",
+    "write-excel-file": "^1.4.19",
+    "xlsx": "^0.18.5"
   }
 }
